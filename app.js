@@ -19,16 +19,23 @@
   function factionName(f){return({neutral:'中立',tiga:'迪迦',belial:'贝利亚',nexus:'奈克瑟斯',leo:'雷欧',tregear:'托雷基亚'})[f]||f}
   function slotName(s){return({weapon:'武器',armor:'装甲',device:'装置'})[s]||s}
 
+
+  // Colour semantics at render time; the underlying rules and saved cards stay unchanged.
+  const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const ruleKinds={守护:'combat',护盾:'combat',突进:'combat',速攻:'combat',眩晕:'combat',沉默:'combat',净化:'combat',登场:'trigger',死亡:'trigger',回合开始:'trigger',回合结束:'trigger',抽牌:'resource',抽取:'resource',能量:'resource',费用:'resource',耐久:'resource',复活:'trigger',蓄力:'trigger'};
+  const ruleWords=new RegExp('【[^【】]*】|抽\\d+张(?:牌)?|'+Object.keys(ruleKinds).sort((a,b)=>b.length-a.length).join('|'),'g');
+  function formatRule(text){return escapeHTML(text).replace(ruleWords,word=>{const bare=word.replace(/^【|】$/g,'');const kind=ruleKinds[bare]||(/^抽\d/.test(word)?'resource':'tag');return `<strong class="rule-word rule-${kind}">${word}</strong>`;});}
+
   function cardFaceHTML(c,{cost=c.cost,large=false}={}){
     const stats=c.type==='unit'?`<div class="focus-stats"><span>⚔ ${c.atk}</span><span>♥ ${c.hp}</span></div>`:c.type==='equipment'&&c.equipment?`<div class="focus-stats"><span>${slotName(c.equipment.slot)}</span><span>耐久 ${c.equipment.durability??'∞'}</span></div>`:'';
-    if(large)return `<div class="focus-cost">${cost}</div><div class="focus-art">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="focus-title">${c.name}</div><div class="focus-type">${R[c.rarity]?.name||''} · ${factionName(c.faction)} · ${typeName(c.type)}</div><div class="focus-rule">${c.text||'无额外效果。'}</div>${stats}`;
-    return `<div class="art-placeholder">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="cname">${c.name}</div><div class="cmeta">${R[c.rarity]?.name||''} · ${factionName(c.faction)} · ${c.cost}费 · ${typeName(c.type)}</div><div class="ctags">${(c.tags||[]).join(' · ')}</div><div class="ctext">${c.text||'无额外效果。'}</div>${c.type==='unit'?`<div class="cstats"><span>⚔ ${c.atk}</span><span>♥ ${c.hp}</span></div>`:c.type==='equipment'&&c.equipment?`<div class="cstats"><span>${slotName(c.equipment.slot)}</span><span>耐久 ${c.equipment.durability??'∞'}</span></div>`:''}`;
+    if(large)return `<div class="focus-cost">${cost}</div><div class="focus-art">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="focus-title">${c.name}</div><div class="focus-type">${R[c.rarity]?.name||''} · ${factionName(c.faction)} · ${typeName(c.type)}</div><div class="focus-rule">${formatRule(c.text||'')}</div>${stats}`;
+    return `<div class="collection-cost">${cost}</div><div class="art-placeholder">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="cname">${c.name}</div><div class="cmeta">${R[c.rarity]?.name||''} · ${factionName(c.faction)} · ${c.cost}费 · ${typeName(c.type)}</div><div class="ctags">${(c.tags||[]).join(' · ')}</div><div class="ctext">${formatRule(c.text||'')}</div>${c.type==='unit'?`<div class="cstats"><span>⚔ ${c.atk}</span><span>♥ ${c.hp}</span></div>`:c.type==='equipment'&&c.equipment?`<div class="cstats"><span>${slotName(c.equipment.slot)}</span><span>耐久 ${c.equipment.durability??'∞'}</span></div>`:''}`;
   }
 
   function showCardFocus(card,{cost=card.cost,playLabel=null,onPlay=null,disabled=false}={}){
     const overlay=$('#cardFocus'),focus=$('#focusCard');if(!overlay||!card)return;
     focus.className=`focus-card rarity-${card.rarity||'common'} faction-${card.faction||'neutral'} type-${card.type||'skill'}`;focus.innerHTML=cardFaceHTML(card,{cost,large:true});
-    $('#focusName').textContent=card.name;$('#focusMeta').textContent=`${cost}费 · ${typeName(card.type)} · ${factionName(card.faction)} · ${R[card.rarity]?.name||''}`;$('#focusText').textContent=card.text||'无额外效果。';
+    $('#focusName').textContent=card.name;$('#focusMeta').textContent=`${cost}费 · ${typeName(card.type)} · ${factionName(card.faction)} · ${R[card.rarity]?.name||''}`;$('#focusText').innerHTML=formatRule(card.text||'');
     const tags=$('#focusTags');tags.innerHTML='';(card.tags||[]).forEach(t=>{const s=document.createElement('span');s.textContent=t;tags.append(s)});
     const actions=$('#focusActions');actions.innerHTML='';
     if(onPlay){const b=document.createElement('button');b.className='focus-play';b.textContent=playLabel||'使用此牌';b.disabled=disabled;b.onclick=()=>{hideCardFocus();onPlay()};actions.append(b)}
@@ -77,12 +84,12 @@
   function removeCard(hero,id){const i=profile.decks[hero].lastIndexOf(id);if(i>=0){profile.decks[hero].splice(i,1);save();renderDeckBuilder()}}
   function renderDeckBuilder(){
     $('#deckHeroTitle').textContent=H[deckHero].name;$$('[data-deck-hero]').forEach(b=>b.classList.toggle('active',b.dataset.deckHero===deckHero));const pool=$('#deckCardPool');pool.innerHTML='';
-    UCR.PACKABLE_IDS.map(id=>C[id]).filter(c=>legalForHero(c,deckHero)).sort((a,b)=>a.cost-b.cost||rarityRank(b.rarity)-rarityRank(a.rarity)).forEach(c=>{const usable=canAdd(deckHero,c.id);pool.append(makeCollectionCard(c.id,false,{addAction:usable?()=>addCard(deckHero,c.id):null,extraClass:usable?'':'unusable'}))});
-    const deck=profile.decks[deckHero],counts={};deck.forEach(id=>counts[id]=(counts[id]||0)+1);const list=$('#deckList');list.innerHTML='';Object.keys(counts).sort((a,b)=>C[a].cost-C[b].cost||C[a].name.localeCompare(C[b].name)).forEach(id=>{const c=C[id],e=document.createElement('div');e.className='deck-entry';e.innerHTML=`<div class="deck-cost">${c.cost}</div><div class="deck-name">${c.name}</div><div class="deck-copy">×${counts[id]}</div>`;e.title='点击移除一张';e.onclick=()=>removeCard(deckHero,id);list.append(e)});$('#deckCount').textContent=`${deck.length} / 30`;$('#deckStatus').textContent=deck.length===30?'牌组已就绪，可以进入战斗模拟。':`还需要 ${30-deck.length} 张牌。`;
+    UCR.PACKABLE_IDS.map(id=>C[id]).filter(c=>legalForHero(c,deckHero)).sort((a,b)=>a.cost-b.cost||rarityRank(b.rarity)-rarityRank(a.rarity)).forEach(c=>{const usable=canAdd(deckHero,c.id);pool.append(makeCollectionCard(c.id,false,{addAction:usable?()=>addCard(deckHero,c.id):null,extraClass:usable?'':'at-limit'}))});
+    const deck=profile.decks[deckHero],counts={};deck.forEach(id=>counts[id]=(counts[id]||0)+1);const list=$('#deckList');list.innerHTML='';Object.keys(counts).sort((a,b)=>C[a].cost-C[b].cost||C[a].name.localeCompare(C[b].name)).forEach(id=>{const c=C[id],e=document.createElement('div');e.className='deck-entry';e.innerHTML=`<div class="deck-cost">${c.cost}</div><div class="deck-name">${c.name}</div><div class="deck-copy">×${counts[id]}</div>`;e.title='点击移除一张';e.onclick=()=>removeCard(deckHero,id);list.append(e)});$('#deckCount').textContent=`${deck.length} / 30`;$('#deckStatus').textContent=deck.length===30?'牌组就绪':`还需要 ${30-deck.length} 张牌。`;
   }
   function autoBuild(){profile.decks[deckHero]=[...UCR.TEST_DECKS[deckHero]];save();renderDeckBuilder()}
   function enemyFor(hero){return({tiga:'belial',belial:'nexus',nexus:'leo',leo:'tregear',tregear:'tiga'})[hero]||'belial'}
-  function renderBattleLobby(){const hero=profile.selectedHero,deck=profile.decks[hero]||[],enemy=enemyFor(hero),valid=deck.length===30;$('#battleHeroName').textContent=H[hero].name;$('#battleEnemyName').textContent=H[enemy].name;$('#battleDeckStatus').textContent=valid?'30张构筑牌已锁定。对局开始后先进行起手调度。':'当前牌组未满30张，请先完成构筑。';$('#startBattleBtn').disabled=!valid;const p=$('#lobbyPlayerSigil'),e=$('#lobbyEnemySigil');p.className=`lobby-sigil ${hero}`;e.className=`lobby-sigil ${enemy}`;p.textContent=H[hero].sigil||hero[0].toUpperCase();e.textContent=H[enemy].sigil||enemy[0].toUpperCase()}
+  function renderBattleLobby(){const hero=profile.selectedHero,deck=profile.decks[hero]||[],enemy=enemyFor(hero),valid=deck.length===30;$('#battleHeroName').textContent=H[hero].name;$('#battleEnemyName').textContent=H[enemy].name;$('#battleDeckStatus').textContent=valid?'30 张 · 标准对战':'当前牌组未满30张，请先完成构筑。';$('#startBattleBtn').disabled=!valid;const p=$('#lobbyPlayerSigil'),e=$('#lobbyEnemySigil');p.className=`lobby-sigil ${hero}`;e.className=`lobby-sigil ${enemy}`;p.textContent=H[hero].sigil||hero[0].toUpperCase();e.textContent=H[enemy].sigil||enemy[0].toUpperCase()}
   function startBattle(){const hero=profile.selectedHero,deck=profile.decks[hero];if(deck.length!==30)return;showPage('game');UCRBattle.start(hero,[...deck])}
 
   $('#createProfileBtn').onclick=()=>{profile=defaultProfile();save();$('#welcomePage').classList.add('hidden');$('#mainNav').classList.remove('hidden');showPage('home')};
@@ -93,5 +100,5 @@
   $('#leaveBattleBtn').onclick=()=>{UCRBattle.leave();showPage('battle')};$('#resetProfileBtn').onclick=()=>{if(confirm('确定重置 UCR Prototype 0.11 的本地测试档案吗？')){storageRemove();location.reload()}};
   $('#cardFocus .focus-backdrop').onclick=hideCardFocus;document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideCardFocus();if(!$('#modal').classList.contains('hidden'))$('#modal').classList.add('hidden')}});
   $('#modalX').onclick=()=>{$('#modal').classList.add('hidden')};
-  window.UCRUI={showCardFocus,hideCardFocus,cardFaceHTML};window.UCRApp={showPage};init();
+  window.UCRUI={showCardFocus,hideCardFocus,cardFaceHTML,formatRule};window.UCRApp={showPage};init();
 })();

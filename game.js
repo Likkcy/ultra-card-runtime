@@ -2,6 +2,7 @@
   const C=UCR.CARDS,H=UCR.HEROES;
   const $=s=>document.querySelector(s);
   const el=(tag,cls,txt='')=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt)n.textContent=txt;return n};
+  const ruleNode=(cls,text)=>{const node=el('div',cls);if(window.UCRUI?.formatRule)node.innerHTML=window.UCRUI.formatRule(text);else node.textContent=text;return node};
   const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
   const rand=a=>a[Math.floor(Math.random()*a.length)];
   let state=null,selectedAttacker=null,targeting=null,session=0;
@@ -16,7 +17,7 @@
   function animateDraw(key,card){pulseDeck(key);const from=key==='player'?$('#deckInfoBtn'):$('.enemy-lane'),to=key==='player'?$('#playerHand'):$('.enemy-lane .hero-side-data');animateGhost(from,to,card?.name||'抽牌',key);combatToast(`${key==='player'?'抽到':'敌方抽取'}：${card?.name||'卡牌'}`,key)}
   function animatePlayedCard(key,card){const core=$('#battlefieldCore');if(!core)return;const n=el('div','played-card-flash '+(key==='enemy'?'enemy':''));n.innerHTML=`<b>${card.name}</b><span>${typeName(card.type)}</span><small>${card.text||''}</small>`;core.append(n);setTimeout(()=>n.remove(),720);combatToast(`${H[side(key).heroId].name} · ${card.name}`,key)}
   function animateToGrave(key,label,fromNode=null){const to=$('#graveyardBtn');if(key==='player'&&to)animateGhost(fromNode||$('#battlefieldCore'),to,label,key,420)}
-  function showTurnSplash(key){const n=$('#turnSplash');if(!n)return;n.classList.remove('hidden');n.querySelector('strong').textContent=key==='player'?'我方回合':'敌方回合';n.querySelector('span').textContent=key==='player'?'部署单位、使用技能并规划攻击':'对手正在执行战术';n.classList.remove('turn-splash');void n.offsetWidth;n.classList.add('turn-splash');setTimeout(()=>n.classList.add('hidden'),1050)}
+  function showTurnSplash(key){const n=$('#turnSplash');if(!n)return;n.classList.remove('hidden');n.querySelector('strong').textContent=key==='player'?'我方回合':'敌方回合';n.querySelector('span').textContent='';n.classList.remove('turn-splash');void n.offsetWidth;n.classList.add('turn-splash');setTimeout(()=>n.classList.add('hidden'),1050)}
   function attackNode(key,att){if(att.type==='hero')return $(key==='player'?'#playerHero':'#enemyHero');return $(`#${key}Board .slot:nth-child(${att.index+1}) .unit`)}
   function targetNode(t){if(t.unitIndex===null)return $(t.side==='player'?'#playerHero':'#enemyHero');return $(`#${t.side}Board .slot:nth-child(${t.unitIndex+1}) .unit`)}
   function animateStrike(key,att,t){const a=centerOf(attackNode(key,att)),b=centerOf(targetNode(t)),root=fxLayer();if(!root)return;const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)*180/Math.PI,line=el('div',`fx-strike-line ${key==='enemy'?'enemy':''}`);line.style.left=a.x+'px';line.style.top=a.y+'px';line.style.width=len+'px';line.style.transform=`rotate(${ang}deg)`;root.append(line);setTimeout(()=>line.remove(),360)}
@@ -121,10 +122,10 @@
   function showMulligan(){
     const selected=new Set();
     $('#modalTitle').textContent='起手调度'; $('#modalBody').innerHTML=''; $('#modalActions').innerHTML='';
-    const shell=el('div','mulligan-shell'),sub=el('div','mulligan-subtitle','选择你想换掉的牌。被标记的牌会洗回30张牌库，并抽取等量新牌。'),row=el('div','mulligan-row'),count=el('div','mulligan-count','当前保留全部3张手牌');
+    const shell=el('div','mulligan-shell'),sub=el('div','mulligan-subtitle','选择替换牌'),row=el('div','mulligan-row'),count=el('div','mulligan-count','保留全部');
     state.player.hand.forEach((c,i)=>{
-      const d=el('div',`mulligan-card rarity-${c.rarity||'common'} faction-${c.faction||'neutral'} type-${c.type||'skill'}`);d.dataset.index=i;d.innerHTML=`<div class="mulligan-cost">${c.cost}</div><h3>${c.name}</h3><div class="cmeta">${typeName(c.type)} · ${(c.tags||[]).slice(0,2).join(' · ')}</div><div class="mulligan-art">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="ctext">${c.text||'无额外效果。'}</div>`;
-      d.onclick=()=>{selected.has(i)?selected.delete(i):selected.add(i);d.classList.toggle('selected');count.textContent=selected.size?`将替换 ${selected.size} 张 · 保留 ${state.player.hand.length-selected.size} 张`:'当前保留全部3张手牌'};row.append(d);
+      const d=el('div',`mulligan-card rarity-${c.rarity||'common'} faction-${c.faction||'neutral'} type-${c.type||'skill'}`);d.dataset.index=i;d.innerHTML=`<div class="mulligan-cost">${c.cost}</div><h3>${c.name}</h3><div class="cmeta">${typeName(c.type)} · ${(c.tags||[]).slice(0,2).join(' · ')}</div><div class="mulligan-art">${(c.tags?.[0]||typeName(c.type)).toUpperCase()}</div><div class="ctext">${window.UCRUI?.formatRule(c.text||'')||c.text||''}</div>`;
+      d.onclick=()=>{selected.has(i)?selected.delete(i):selected.add(i);d.classList.toggle('selected');count.textContent=selected.size?`将替换 ${selected.size} 张 · 保留 ${state.player.hand.length-selected.size} 张`:'保留全部'};row.append(d);
     });
     shell.append(sub,row,count);$('#modalBody').append(shell);
     const ok=el('button','primary','确认调度');
@@ -211,7 +212,7 @@
         // 有目标战吼的单位仍允许下场，只是该次登场效果因无合法目标而跳过；
         // 纯技能/法术则不能进入“死锁式”目标选择。
         if(card.type==='unit'){if(key==='player')combatToast('无合法目标 · 登场效果跳过');log(`【${card.name}】没有合法目标，仍然完成召唤，目标型登场效果跳过。`);resolveCard(key,idx,card,cost,null);return}
-        if(key==='player'){combatToast('当前没有合法目标');status(`【${card.name}】当前没有合法目标，未进入目标选择。`);render()}
+        if(key==='player'){combatToast('当前没有合法目标');status(`${card.name} · 无合法目标`);render()}
         return;
       }
       chooseTargetForCard(key,idx,card,cost);return;
@@ -228,7 +229,7 @@
     }
     if(key==='enemy'){const t=pickAITarget(key,card.target,card);if(t)resolveCard(key,idx,card,cost,t);return}
     targeting={kind:'card',key,idx,card,cost,targetType:card.target}; selectedAttacker=null;
-    status(`请选择【${card.name}】的目标；按 ESC、右键或“取消选择”可退出。`); render();
+    status(`${card.name} · 选择目标`); render();
   }
   function validTarget(key,type,tKey,unitIndex){
     if(type==='friendlyUnit')return tKey===key&&unitIndex!==null;
@@ -480,7 +481,7 @@
     if(!state)return false;
     if(state.player.hp<=0||state.enemy.hp<=0){
       state.gameOver=true;const win=state.enemy.hp<=0&&state.player.hp>0;
-      status(win?'胜利！敌方主战角色被击败。':'失败。你的主战角色被击败。');render();return true;
+      status(win?'胜利':'败北');render();return true;
     }
     return false;
   }
@@ -490,7 +491,7 @@
     const s=side(key),p=H[s.heroId].forms[s.form].power;if(s.heroPowerUsed||s.energy<p.cost)return;
     if(p.action==='damage'){
       if(key==='enemy'){damageHero('player',p.amount);s.energy-=p.cost;s.heroPowerUsed=true;triggerTrap('player','enemyHeroPower',{actor:key});processDeaths();render();checkGameOver();return}
-      targeting={kind:'heroPower',key,targetType:'anyEnemy',power:p};status(`请选择【${p.name}】的目标。`);render();return;
+      targeting={kind:'heroPower',key,targetType:'anyEnemy',power:p};status(`${p.name} · 选择目标`);render();return;
     }
     s.energy-=p.cost;s.heroPowerUsed=true;
     if(p.action==='attackBuff'){s.heroAttack=Math.max(s.heroAttack,p.amount);s.heroAttackTurns=Math.max(s.heroAttackTurns,1)}
@@ -513,12 +514,12 @@
     if(!state||state.active!==key||state.gameOver)return;const u=getUnit(key,i);if(!u||u.sleeping||u.attacked)return;
     if(u.rushOnly&&side(other(key)).board.length===0){if(key==='player'){combatToast('当前没有可攻击的单位');status(`【${u.name}】具有【突进】，当前没有合法攻击目标。`);render()}return}
     if(key==='enemy'){resolveAttack(key,{type:'unit',index:i},pickAttackTarget(key,u));return}
-    selectedAttacker={key,type:'unit',index:i};targeting=null;status(`已选择【${u.name}】，请选择攻击目标；按 ESC、右键或“取消选择”可退出。`);render();
+    selectedAttacker={key,type:'unit',index:i};targeting=null;status(`${u.name} · 选择攻击目标`);render();
   }
   function attackWithHero(key){
     const s=side(key);if(!s||state.active!==key||heroAttackValue(s)<=0||s.heroAttackUsed)return;
     if(key==='enemy'){resolveAttack(key,{type:'hero'},pickAttackTarget(key,{}));return}
-    selectedAttacker={key,type:'hero'};targeting=null;status(`已选择${H[s.heroId].name}，请选择攻击目标。`);render();
+    selectedAttacker={key,type:'hero'};targeting=null;status(`${H[s.heroId].name} · 选择攻击目标`);render();
   }
   function legalAttackTarget(attackerKey,targetSide,targetUnitIndex,attackerObj){
     if(targetSide!==other(attackerKey))return false;const enemy=side(targetSide);
@@ -644,8 +645,9 @@
     setTimeout(()=>core?.classList.remove('pulse-player','pulse-enemy','fx-skill'),360);
   }
   function status(t){
-    if($('#statusBanner'))$('#statusBanner').textContent=t;
-    if($('#battleSubText'))$('#battleSubText').textContent=t;
+    const quiet=!t||/^(你的回合：|敌方回合：|准备对局|正在建立战斗)/.test(t);
+    if($('#statusBanner')){$('#statusBanner').textContent=quiet?'':t;$('#statusBanner').classList.toggle('hidden',quiet);}
+    if($('#battleSubText'))$('#battleSubText').textContent='';
     if($('#battleActionText')&&/请选择|选择/.test(t))$('#battleActionText').textContent='选择目标';
   }
   function log(html){const root=$('#log');if(!root)return;const n=el('div');n.innerHTML=html;root.prepend(n);while(root.children.length>80)root.lastElementChild.remove()}
@@ -656,6 +658,7 @@
   }
   function renderHero(key,root){
     const s=side(key),hero=H[s.heroId],form=hero.forms[s.form],p=form.power;root.innerHTML='';
+    root.title=`${p.name} · ${p.cost}能量 · ${p.text}`;
     const id=el('div','hero-identity-row');id.append(el('div','hero-name',hero.name));
     const formNode=el('div','hero-form',form.name);
     const hpRow=el('div','hero-hp-row');const hpLabel=el('span','hero-hp-label','HP');const hpBar=el('div','hero-hp-bar');const hpFill=el('div','hero-hp-fill');hpFill.style.width=`${Math.max(0,Math.min(100,s.hp/s.maxHp*100))}%`;hpBar.append(hpFill);const hpNum=el('span','hero-hp-number',`${Math.max(0,s.hp)} / ${s.maxHp}`);hpRow.append(hpLabel,hpBar,hpNum);
@@ -671,7 +674,7 @@
       const slot=el('div','slot'),u=s.board[i];
       if(u){
         const d=el('div','unit '+(key==='enemy'?'enemy-unit':''));if(u.keywords?.includes('guard'))d.classList.add('guard');if(u.shield)d.classList.add('shielded');if(u.sleeping)d.classList.add('sleeping');if(!u.sleeping&&!u.attacked&&key==='player'&&state.active==='player')d.classList.add('can-attack');if(selectedAttacker?.type==='unit'&&selectedAttacker.key===key&&selectedAttacker.index===i)d.classList.add('selected');if(targeting&&validTarget(targeting.key,targeting.targetType,key,i))d.classList.add('targetable');if(selectedAttacker){const au=selectedAttacker.type==='unit'?getUnit(selectedAttacker.key,selectedAttacker.index):{};if(legalAttackTarget(selectedAttacker.key,key,i,au))d.classList.add('targetable')};
-        d.append(el('div','unit-artmark',(u.tags?.[0]||typeName(u.type)||'UNIT').toUpperCase()),el('div','unit-name',u.name),el('div','unit-tags',(u.tags||[]).slice(0,3).join(' · ')),el('div','unit-text',u.text||''));const st=el('div','unit-stats');st.append(el('span','',`⚔ ${u.atk}`),el('span','',`♥ ${u.hp}`));d.append(st);
+        d.append(el('div','unit-artmark',(u.tags?.[0]||typeName(u.type)||'UNIT').toUpperCase()),el('div','unit-name',u.name),el('div','unit-tags',(u.tags||[]).slice(0,3).join(' · ')),ruleNode('unit-text',u.text||''));const st=el('div','unit-stats');st.append(el('span','',`⚔ ${u.atk}`),el('span','',`♥ ${u.hp}`));d.append(st);
         if(u.enterFx){d.classList.add('unit-enter');u.enterFx=false}
         d.onclick=()=>{if(targeting||selectedAttacker)clickTarget(key,i);else if(key==='player'&&!u.sleeping&&!u.attacked&&state.active==='player')attackWithUnit('player',i);else if(window.UCRUI&&C[u.id])window.UCRUI.showCardFocus({...C[u.id],atk:u.atk,hp:u.hp})};d.oncontextmenu=e=>{e.preventDefault();if(window.UCRUI&&C[u.id])window.UCRUI.showCardFocus({...C[u.id],atk:u.atk,hp:u.hp})};slot.append(d);
       }
@@ -684,7 +687,7 @@
       const d=el('div',`card rarity-${c.rarity||'common'} faction-${c.faction||'neutral'} type-${c.type||'skill'}`),cost=effectiveCost(c,s),off=i-(n-1)/2;
       d.style.setProperty('--fan-rot',`${off*1.45}deg`);d.style.setProperty('--fan-y',`${Math.abs(off)*2.2}px`);d.style.setProperty('--fan-z',String(20-Math.round(Math.abs(off))));
       if(cost>s.energy||state.active!=='player'||(c.type==='unit'&&s.board.length>=5)||(c.type==='trap'&&s.traps.length>=3))d.classList.add('disabled');
-      d.append(el('div','cost',String(cost)),el('div','card-name',c.name),el('div','card-type',typeName(c.type)),el('div','card-artmark',(c.tags?.[0]||typeName(c.type)).toUpperCase()),el('div','card-tags',(c.tags||[]).slice(0,3).join(' · ')),el('div','card-text',c.text||''));
+      d.append(el('div','cost',String(cost)),el('div','card-name',c.name),el('div','card-type',typeName(c.type)),el('div','card-artmark',(c.tags?.[0]||typeName(c.type)).toUpperCase()),el('div','card-tags',(c.tags||[]).slice(0,3).join(' · ')),ruleNode('card-text',c.text||''));
       if(c.type==='unit'){const st=el('div','card-stats');st.append(el('span','',`⚔ ${c.atk}`),el('span','',`♥ ${c.hp}`));d.append(st)}
       if(c.type==='equipment'&&c.equipment){const st=el('div','card-stats equipment-card-stats');st.append(el('span','',EQUIPMENT_SLOT_NAMES[c.equipment.slot]||'装备'),el('span','',`耐久 ${c.equipment.durability??'∞'}`));d.append(st)}
       const noTarget=!!(c.target&&c.type!=='unit'&&!hasLegalTarget('player',c.target));if(noTarget)d.classList.add('no-legal-target');
@@ -718,11 +721,11 @@
     $('#playerDeckCount').textContent=state.player.deck.length;$('#enemyDeckCount').textContent=state.enemy.deck.length;$('#enemyHandCount').textContent=state.enemy.hand.length;if($('#playerHandCount'))$('#playerHandCount').textContent=state.player.hand.length;
     if($('#railDeckCount'))$('#railDeckCount').textContent=state.player.deck.length;if($('#railGraveCount'))$('#railGraveCount').textContent=state.player.graveyard.length;if($('#playerAttackState')){const atk=heroAttackValue(state.player);$('#playerAttackState').textContent=atk>0?(state.player.heroAttackUsed?`${atk} 已用`:`${atk} 可攻`):'0'};
     if($('#turnCounter'))$('#turnCounter').textContent=`回合 ${state.turn}`;if($('#turnSideLabel'))$('#turnSideLabel').textContent=state.gameOver?'战斗结束':state.active==='player'?'我方行动':state.active==='enemy'?'敌方行动':'准备阶段';if($('#battlePhaseLabel'))$('#battlePhaseLabel').textContent=state.active==='player'?'PLAYER TACTICAL PHASE':state.active==='enemy'?'ENEMY TACTICAL PHASE':'TACTICAL LINK';
-    const pp=H[state.player.heroId].forms[state.player.form].power,hpBtn=$('#heroPowerBtn');const hpStrong=hpBtn?.querySelector('strong'),hpSmall=hpBtn?.querySelector('small');if(hpStrong)hpStrong.textContent=`${pp.name}（${pp.cost}）`;if(hpSmall)hpSmall.textContent='英雄能力';if(hpBtn)hpBtn.disabled=state.player.heroPowerUsed||state.player.energy<pp.cost||state.active!=='player';$('#endTurnBtn').disabled=state.active!=='player'||state.gameOver;
-    const cancelBtn=$('#cancelActionBtn'),choosing=!!(targeting||selectedAttacker);if(cancelBtn)cancelBtn.classList.toggle('hidden',!choosing);$('#statusBanner')?.classList.toggle('target-mode',choosing);
+    const pp=H[state.player.heroId].forms[state.player.form].power,hpBtn=$('#heroPowerBtn');const hpStrong=hpBtn?.querySelector('strong'),hpSmall=hpBtn?.querySelector('small');if(hpStrong)hpStrong.textContent=`${pp.name}（${pp.cost}）`;if(hpSmall)hpSmall.textContent='英雄能力';if(hpBtn)hpBtn.title=pp.text;if(hpBtn)hpBtn.disabled=state.player.heroPowerUsed||state.player.energy<pp.cost||state.active!=='player';$('#endTurnBtn').disabled=state.active!=='player'||state.gameOver;
+    const cancelBtn=$('#cancelActionBtn'),choosing=!!(targeting||selectedAttacker);if(cancelBtn)cancelBtn.classList.toggle('hidden',!choosing);$('#statusBanner')?.classList.toggle('target-mode',choosing);$('#battlefieldCore')?.classList.toggle('choosing',choosing);
     const ev=[];if(state.player.event)ev.push(`我方：${state.player.event.name}(${state.player.event.remaining})`);if(state.enemy.event)ev.push(`敌方：${state.enemy.event.name}(${state.enemy.event.remaining})`);if($('#eventZone'))$('#eventZone').textContent='事件区：'+(ev.join(' / ')||'无');
     if($('#battleActionText')&&!targeting&&!selectedAttacker)$('#battleActionText').textContent=state.gameOver?'战斗结束':state.active==='player'?'等待我方指令':state.active==='enemy'?'敌方正在行动':'等待链接';
-    if(!targeting&&!selectedAttacker&&!state.gameOver)status(state.active==='player'?'你的回合：从当前手牌部署单位、使用技能或发起攻击。':state.active==='enemy'?'敌方回合：正在执行行动。':'准备对局…');
+    if(!targeting&&!selectedAttacker&&!state.gameOver)status('');
   }
   function openBattleModal(title,contentBuilder){
     $('#modalTitle').textContent=title;$('#modalBody').innerHTML='';$('#modalActions').innerHTML='';contentBuilder($('#modalBody'));const close=el('button','primary','关闭');close.onclick=closeModal;$('#modalActions').append(close);$('#modal').classList.remove('hidden');
@@ -730,7 +733,7 @@
   function inspectDeck(){openBattleModal('牌库状态',root=>{const wrap=el('div','battle-inspect-grid');for(const key of ['player','enemy']){const s=side(key),panel=el('div','battle-inspect-panel');panel.innerHTML=`<h4>${key==='player'?'我方':'敌方'}牌库 · 剩余 ${s.deck.length}</h4>`;const list=el('div','inspect-list');const counts={};s.deck.forEach(id=>counts[id]=(counts[id]||0)+1);Object.keys(counts).sort((a,b)=>C[a].cost-C[b].cost).forEach(id=>{const row=el('div','inspect-pill',`${C[id].cost}费 · ${C[id].name} ×${counts[id]}`);list.append(row)});if(!s.deck.length)list.append(el('div','inspect-pill','牌库已空'));panel.append(list);wrap.append(panel)}root.append(wrap)})}
   function inspectGraveyard(){openBattleModal('墓地',root=>{const wrap=el('div','battle-inspect-grid');for(const key of ['player','enemy']){const s=side(key),panel=el('div','battle-inspect-panel');panel.innerHTML=`<h4>${key==='player'?'我方':'敌方'}墓地 · ${s.graveyard.length}</h4>`;const list=el('div','inspect-list');s.graveyard.slice().reverse().forEach(id=>list.append(el('div','inspect-pill',C[id]?.name||id)));if(!s.graveyard.length)list.append(el('div','inspect-pill','暂无记录'));panel.append(list);wrap.append(panel)}root.append(wrap)})}
   function inspectHistory(){openBattleModal('战斗历史',root=>{const copy=el('div','history-copy');[...$('#log').children].forEach(n=>copy.append(n.cloneNode(true)));if(!copy.children.length)copy.append(el('div','','暂无记录'));root.append(copy)})}
-  function inspectSettings(){openBattleModal('战场设置',root=>{const row=el('div','settings-row');const txt=el('div','');txt.innerHTML='<b>战场动态效果</b><div class="muted smalltext">关闭后保留界面，只停用扫描线、光束与呼吸动画。</div>';const btn=el('button','ghost',document.body.classList.contains('reduced-fx')?'开启动效':'关闭动效');btn.onclick=()=>{document.body.classList.toggle('reduced-fx');btn.textContent=document.body.classList.contains('reduced-fx')?'开启动效':'关闭动效'};row.append(txt,btn);root.append(row)})}
+  function inspectSettings(){openBattleModal('战场设置',root=>{const row=el('div','settings-row');const txt=el('div','');txt.innerHTML='<b>战场动效</b>';const btn=el('button','ghost',document.body.classList.contains('reduced-fx')?'开启动效':'关闭动效');btn.onclick=()=>{document.body.classList.toggle('reduced-fx');btn.textContent=document.body.classList.contains('reduced-fx')?'开启动效':'关闭动效'};row.append(txt,btn);root.append(row)})}
   function surrender(){if(!state||state.gameOver)return;if(!confirm('确定投降并结束本局对战吗？'))return;state.gameOver=true;state.player.hp=0;status('你已投降，本局战斗结束。');log('<b>我方选择投降。</b>');render()}
   $('#endTurnBtn').onclick=endTurn;$('#heroPowerBtn').onclick=()=>heroPower('player');
   $('#cancelActionBtn')?.addEventListener('click',()=>cancelCurrentAction());
