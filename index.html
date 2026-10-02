@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UCR Prototype 0.11</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="ambient-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="app">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <div class="brand-sigil">U</div>
+      <div>
+        <div class="title">ULTRA CARD RUNTIME</div>
+        <div class="subtitle">TACTICAL ARCHIVE · Prototype 0.11</div>
+      </div>
+    </div>
+    <div class="top-status">
+      <div class="online-dot"><i></i> 开发测试档案</div>
+      <div class="wallet"><span>光之结晶</span><strong id="creditsLabel">0</strong></div>
+    </div>
+  </header>
+
+  <nav id="mainNav" class="nav hidden">
+    <button data-page="home"><span class="nav-mark">⌂</span><b>作战基地</b><small>BASE</small></button>
+    <button data-page="collection"><span class="nav-mark">▦</span><b>卡牌档案</b><small>ARCHIVE</small></button>
+    <button data-page="decks"><span class="nav-mark">≡</span><b>构筑室</b><small>DECK LAB</small></button>
+    <button data-page="battle"><span class="nav-mark">◇</span><b>战斗模拟</b><small>ARENA</small></button>
+    <button data-page="packs" class="nav-secondary"><span class="nav-mark">✦</span><b>抽卡暂存</b><small>PACKS</small></button>
+  </nav>
+
+  <main>
+    <section id="welcomePage" class="page welcome hidden">
+      <div class="welcome-emblem">UCR</div>
+      <div class="eyebrow">TACTICAL SYSTEM ONLINE</div>
+      <h1>建立 UCR 开发测试档案</h1>
+      <p>全部测试卡直接解锁。当前重点：完整基础卡池、五英雄构筑生态、战斗规则与实战验证。</p>
+      <button id="createProfileBtn" class="primary big">进入作战终端 <span>→</span></button>
+    </section>
+
+    <section id="homePage" class="page hidden home-stage">
+      <div class="home-hero-scene">
+        <div class="hero-aura"></div>
+        <div id="homeHeroEmblem" class="home-hero-emblem tiga"><span>ULTRA</span></div>
+        <div class="home-hero-copy">
+          <div class="eyebrow">当前主战角色 / ACTIVE COMMANDER</div>
+          <h1 id="homeHeroName"></h1>
+          <p id="homeHeroDesc"></p>
+          <div class="hero-switch hero-switch-large">
+            <button data-home-hero="tiga"><i class="mini-sigil tiga"></i><span><b>迪迦奥特曼</b><small>形态 · 技能 · GUTS</small></span></button>
+            <button data-home-hero="belial"><i class="mini-sigil belial"></i><span><b>贝利亚</b><small>自伤 · 黑暗 · 怪兽</small></span></button>
+            <button data-home-hero="nexus"><i class="mini-sigil nexus"></i><span><b>奈克瑟斯</b><small>生命交换 · 适能进化</small></span></button>
+            <button data-home-hero="leo"><i class="mini-sigil leo"></i><span><b>雷欧</b><small>格斗 · 连段 · 反击</small></span></button>
+            <button data-home-hero="tregear"><i class="mini-sigil tregear"></i><span><b>托雷基亚</b><small>陷阱 · 欺骗 · 混沌</small></span></button>
+          </div>
+        </div>
+        <div class="home-vitals">
+          <div><span>卡牌档案</span><strong id="uniqueOwned">0</strong><small>种已解锁</small></div>
+          <div><span>收藏总量</span><strong id="totalOwned">0</strong><small>张测试卡</small></div>
+          <div><span>当前构筑</span><strong id="deckProgress">0/30</strong><small>合法牌组</small></div>
+          <div><span>卡包记录</span><strong id="packsOpened">0</strong><small>暂存系统</small></div>
+        </div>
+      </div>
+
+      <div class="home-actions">
+        <button data-jump="battle" class="mission-card mission-primary">
+          <span class="mission-index">01</span><span class="mission-icon">◇</span>
+          <span class="mission-copy"><b>进入实战</b><small>使用当前30张牌组进入战斗模拟</small></span><span class="mission-go">→</span>
+        </button>
+        <button data-jump="decks" class="mission-card">
+          <span class="mission-index">02</span><span class="mission-icon">≡</span>
+          <span class="mission-copy"><b>构筑牌组</b><small>调整曲线、专属卡与中立组件</small></span><span class="mission-go">→</span>
+        </button>
+        <button data-jump="collection" class="mission-card">
+          <span class="mission-index">03</span><span class="mission-icon">▦</span>
+          <span class="mission-copy"><b>浏览卡牌档案</b><small>查看336张测试卡及完整规则文本</small></span><span class="mission-go">→</span>
+        </button>
+      </div>
+      <div class="dev-strip"><span>DEVELOPER CHANNEL</span><p>当前为开发测试档案：正式收集、经济系统与卡包演出暂不作为主流程。</p><button id="resetProfileBtn" class="danger subtle">重置本地档案</button></div>
+    </section>
+
+    <section id="packsPage" class="page hidden pack-page">
+      <div class="section-banner"><div><div class="eyebrow">ARCHIVED FEATURE</div><h1>卡包试验舱</h1><p>暂存功能，不参与当前战斗内容验证。</p></div><div class="banner-glyph">✦</div></div>
+      <div class="pack-stage">
+        <div class="pack-orb"><div class="pack-core">UCR</div><div class="pack-ring r1"></div><div class="pack-ring r2"></div></div>
+        <div class="pack-panel">
+          <h2>Prototype Set 01</h2><p>每包5张。当前开发档案已经解锁全部测试卡，因此这里只用于保留系统验证。</p>
+          <div class="pack-actions"><button id="openOneBtn" class="primary">开启1包 · 100</button><button id="openTenBtn" class="ghost">开启10包 · 900</button></div>
+          <div id="packNotice" class="notice"></div>
+        </div>
+      </div>
+      <div id="packReveal" class="pack-reveal"></div>
+    </section>
+
+    <section id="collectionPage" class="page hidden archive-page">
+      <div class="section-banner compact-banner">
+        <div><div class="eyebrow">CARD ARCHIVE</div><h1>卡牌档案</h1><p>点击卡牌查看大图与完整效果。</p></div>
+        <div class="filters"><label>阵营<select id="collectionFaction"><option value="all">全部阵营</option><option value="neutral">中立</option><option value="tiga">迪迦</option><option value="belial">贝利亚</option><option value="nexus">奈克瑟斯</option><option value="leo">雷欧</option><option value="tregear">托雷基亚</option></select></label><label>类型<select id="collectionType"><option value="all">全部类型</option><option value="unit">单位</option><option value="skill">技能</option><option value="equipment">装备</option><option value="event">事件</option><option value="trap">陷阱</option></select></label></div>
+      </div>
+      <div id="collectionGrid" class="collection-grid"></div>
+    </section>
+
+    <section id="decksPage" class="page hidden deck-page">
+      <div class="deck-header">
+        <div><div class="eyebrow">DECK CONSTRUCTION</div><h1>构筑室</h1><p>单击卡牌查看，使用卡牌右上角“＋”加入牌组。</p></div>
+        <div class="hero-switch deck-hero-switch"><button data-deck-hero="tiga"><i class="mini-sigil tiga"></i>迪迦</button><button data-deck-hero="belial"><i class="mini-sigil belial"></i>贝利亚</button><button data-deck-hero="nexus"><i class="mini-sigil nexus"></i>奈克瑟斯</button><button data-deck-hero="leo"><i class="mini-sigil leo"></i>雷欧</button><button data-deck-hero="tregear"><i class="mini-sigil tregear"></i>托雷基亚</button></div>
+      </div>
+      <div class="deck-layout">
+        <div class="deck-browser">
+          <div class="deck-browser-title"><span>可用卡牌</span><b id="deckHeroTitle">迪迦奥特曼</b></div>
+          <div id="deckCardPool" class="collection-grid deck-pool"></div>
+        </div>
+        <aside class="deck-side">
+          <div class="deck-side-head"><div><small>ACTIVE DECK</small><b id="deckCount">0 / 30</b></div><div class="deck-orb"></div></div>
+          <div id="deckList" class="deck-list"></div>
+          <div id="deckStatus" class="notice deck-notice"></div>
+          <div class="deck-buttons"><button id="autoBuildBtn" class="primary">载入测试套牌</button><button id="clearDeckBtn" class="danger subtle">清空牌组</button></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="battleLobbyPage" class="page hidden lobby-page">
+      <div class="lobby-arena">
+        <div class="lobby-fighter player-fighter"><div id="lobbyPlayerSigil" class="lobby-sigil tiga">U</div><span>PLAYER</span><strong id="battleHeroName"></strong></div>
+        <div class="versus-core"><small>PRACTICE MATCH</small><b>VS</b><i></i></div>
+        <div class="lobby-fighter enemy-fighter"><div id="lobbyEnemySigil" class="lobby-sigil belial">B</div><span>OPPONENT</span><strong id="battleEnemyName">贝利亚</strong></div>
+        <div class="lobby-footer"><p id="battleDeckStatus"></p><button id="startBattleBtn" class="primary battle-start">开始对战 <span>→</span></button></div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="game page hidden">
+      <div class="battle-shell">
+        <header class="battle-hud-top">
+          <button id="leaveBattleBtn" class="hud-icon danger-lite" title="退出对战">←</button>
+          <div class="turn-cluster"><small id="turnCounter">回合 1</small><strong id="turnSideLabel">准备阶段</strong></div>
+          <div id="statusBanner" class="status-banner">正在建立战斗链接…</div>
+          <button id="battleSettingsBtn" class="hud-icon" title="战场设置">⚙</button>
+        </header>
+
+        <div class="battle-body">
+          <aside class="battle-left-dock">
+            <button id="deckInfoBtn" class="stack-button deck-stack-button"><span class="stack-visual"><i></i><i></i><i></i></span><small>牌库</small><b id="railDeckCount">30</b></button>
+            <button id="graveyardBtn" class="stack-button grave-stack-button"><span class="grave-icon">◇</span><small>墓地</small><b id="railGraveCount">0</b></button>
+            <div class="energy-dock"><span>光能</span><strong id="railEnergyText">0 / 0</strong><div id="energyPips" class="energy-pips"></div></div>
+          </aside>
+
+          <main class="combat-arena">
+            <section class="hero-lane enemy-lane">
+              <div id="enemyPortrait" class="hero-portrait"></div>
+              <div id="enemyHero" class="hero-card enemy"></div>
+              <div class="hero-side-data"><div><span>能量</span><b id="enemyEnergy"></b></div><div><span>手牌</span><b id="enemyHandCount"></b></div><div><span>牌库</span><b id="enemyDeckCount"></b></div></div>
+              <div class="lane-assets"><div id="enemyEvent" class="event-chip empty">无事件</div><div id="enemyEquipment" class="equipment-slots"></div><div id="enemyTraps" class="trap-slots"></div></div>
+            </section>
+
+            <section class="board-space enemy-space"><div id="enemyBoard" class="board board-enemy"></div></section>
+
+            <section id="battlefieldCore" class="battlefield-core">
+              <div class="arena-floor"></div><div class="arena-horizon"></div><div class="arena-scan"></div>
+              <div class="battle-action-panel"><small id="battlePhaseLabel">TACTICAL LINK</small><strong id="battleActionText">等待行动</strong><span id="battleSubText">部署单位、使用技能或选择攻击目标</span><button id="cancelActionBtn" class="cancel-action hidden" type="button">取消选择 · ESC</button></div>
+              <div id="combatToastLayer" class="combat-toast-layer"></div>
+            </section>
+
+            <section class="board-space player-space"><div id="playerBoard" class="board board-player"></div></section>
+
+            <section class="hero-lane player-lane">
+              <div id="playerPortrait" class="hero-portrait"></div>
+              <div id="playerHero" class="hero-card player"></div>
+              <div class="hero-side-data player-side-data"><div><span>手牌</span><b><span id="playerHandCount"></span>/10</b></div><div><span>牌库</span><b><span id="playerDeckCount"></span>/30</b></div><div><span>攻击</span><b id="playerAttackState">0</b></div></div>
+              <div class="lane-assets"><div id="playerEvent" class="event-chip empty">无事件</div><div id="playerEquipment" class="equipment-slots"></div><div id="playerTraps" class="trap-slots"></div></div>
+            </section>
+
+            <section class="hand-zone">
+              <div class="hand-title"><span>TACTICAL HAND</span><b>当前手牌</b></div>
+              <div id="playerHand" class="hand"></div>
+            </section>
+          </main>
+
+          <aside class="battle-right-dock">
+            <button id="heroPowerBtn" class="hero-power-button"><span class="power-ring"></span><small>英雄能力</small><strong>能力</strong></button>
+            <button id="endTurnBtn" class="end-turn-button"><span>结束回合</span><small>END TURN</small></button>
+            <button id="battleHistoryBtn" class="dock-mini"><b>≡</b><span>历史</span></button>
+            <button id="surrenderBtn" class="dock-mini danger-control"><b>!</b><span>投降</span></button>
+          </aside>
+        </div>
+      </div>
+      <div id="eventZone" class="hidden"></div>
+      <div id="log" class="log battle-log-store"></div>
+      <div id="fxLayer" class="fx-layer" aria-hidden="true"></div>
+      <div id="turnSplash" class="turn-splash hidden"><small>TURN</small><strong></strong><span></span></div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><div id="modalTitle" class="modal-title"></div><button id="modalX" class="modal-x">×</button></div><div id="modalBody" class="modal-body"></div><div id="modalActions" class="modal-actions"></div></div></div>
+
+<div id="cardFocus" class="card-focus hidden" role="dialog" aria-modal="true">
+  <div class="focus-backdrop"></div>
+  <div class="focus-stage">
+    <div id="focusCard" class="focus-card"></div>
+    <div class="focus-info"><div class="eyebrow">CARD DETAIL</div><h2 id="focusName"></h2><div id="focusMeta" class="focus-meta"></div><p id="focusText"></p><div id="focusTags" class="focus-tags"></div><div id="focusActions" class="focus-actions"></div></div>
+  </div>
+</div>
+
+<script src="cards.js"></script>
+<script src="game.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
