@@ -1,0 +1,18 @@
+{
+  "theme": "sunlit-0.12",
+  "cssSha256": "1301d94d7866bac247808d1fc2bf03b021ab4ac03e2dbd0a9a6be4813094b03c",
+  "resources": {
+    "cards.js": {
+      "filename": "cards.a36985679625.js",
+      "sha256": "a369856796254470e8481480f4a2cbea20a04150d5042b2501b6688e6c6f6db8"
+    },
+    "game.js": {
+      "filename": "game.ac0ed2ab0852.js",
+      "sha256": "ac0ed2ab08527aff4b40b8760f8941130fd52103fdbd5147c52eaa9bf395554d"
+    },
+    "app.js": {
+      "filename": "app.43522b0763a7.js",
+      "sha256": "43522b0763a769ed724ddbd348196a530f8c21b44b2b41f03be3bd2c440e7260"
+    }
+  }
+}
