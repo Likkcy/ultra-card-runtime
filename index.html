@@ -47,6 +47,45 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
 /* A full hand remains selectable; inspecting a card shows its complete rules. */
 .hand:has(.card:nth-child(6)) .card{margin-left:-38px}.hand:has(.card:nth-child(8)) .card{margin-left:-55px}.hand:has(.card:nth-child(10)) .card{margin-left:-65px}.hand .card:first-child{margin-left:0!important}
 @media(max-width:1200px){.hand:has(.card:nth-child(6)) .card{margin-left:-42px}.hand:has(.card:nth-child(8)) .card{margin-left:-62px}.hand:has(.card:nth-child(9)) .card{margin-left:-76px}.hand:has(.card:nth-child(10)) .card{margin-left:-82px}}
+/* Battle feedback: gold sparks, card release and a compact result seal. */
+.hand .card{touch-action:none;user-select:none;-webkit-user-select:none}
+.drag-source{opacity:.28!important}
+.drag-ghost{position:fixed!important;z-index:9000!important;width:150px!important;pointer-events:none!important;transform:rotate(-6deg) scale(1.08)!important;box-shadow:0 18px 48px #38251877!important;opacity:.96!important;margin:0!important}
+.drop-ready{outline:3px solid #c9a24e!important;outline-offset:5px;box-shadow:0 0 30px #f5d384!important}
+.fx-impact{position:fixed;width:70px;height:70px;border:3px solid #e4bb67;border-radius:50%;transform:translate(-50%,-50%);animation:impact-ring .65s ease-out forwards;box-shadow:0 0 25px #f9d582;pointer-events:none}
+.fx-impact.heavy{width:120px;height:120px;border-width:6px;box-shadow:0 0 70px #f3bf52}
+.fx-impact.damage{border-color:#cd6553}.fx-impact.heal{border-color:#80c79d}.fx-impact.grave{border-color:#9c85a5}.fx-impact.trap{border-color:#b182ca}
+.fx-spark{position:fixed;width:7px;height:7px;background:#f9d17d;border-radius:50%;box-shadow:0 0 10px #f6cf73;animation:impact-spark .6s ease-out forwards;pointer-events:none}
+.fx-spark.damage{background:#dc725d}.fx-spark.heal{background:#90d1a1}.fx-spark.grave{background:#ac99b5}
+.played-card-flash.legendary-impact{border:3px solid #b88b39;box-shadow:0 0 60px #e4b74b99;background:linear-gradient(135deg,#fff9e6,#f0dbac);animation:legendary-reveal .72s ease-out both}
+.battle-result{position:fixed;inset:0;z-index:9500;display:grid;place-items:center;background:#352a20aa;backdrop-filter:blur(7px);padding:24px}
+.result-card{width:min(440px,100%);padding:38px;text-align:center;background:linear-gradient(150deg,#fff9ea,#eee1c9);border:2px solid #bca06b;border-radius:22px;box-shadow:0 24px 100px #22180b77;color:#4d392a;animation:result-reveal .4s ease-out}
+.result-emblem{font-size:64px;color:#b88936;text-shadow:0 3px 25px #e4c577}.result-card h2{font-size:42px;margin:4px 0 8px}.result-card p{color:#826f57;margin-bottom:28px}.result-card button{width:100%}
+.battle-result[data-outcome=defeat] .result-emblem{color:#8c7690}.audio-controls{gap:14px;flex-wrap:wrap}.audio-controls input{min-width:100px;flex:1;accent-color:#a27b39}.audio-controls output{width:45px;text-align:right;font-variant-numeric:tabular-nums}
+@keyframes impact-ring{to{transform:translate(-50%,-50%) scale(2.8);opacity:0}}
+@keyframes impact-spark{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes legendary-reveal{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}25%{transform:translate(-50%,-50%) scale(1.08);opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes result-reveal{from{transform:translateY(24px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.reduced-fx .fx-layer,.reduced-fx .played-card-flash,.reduced-fx .turn-splash,.reduced-fx .combat-toast{display:none!important}
+@media(prefers-reduced-motion:reduce){.fx-layer,.played-card-flash,.turn-splash{display:none!important}.result-card{animation:none}}
+.assets-heading{display:flex;justify-content:space-between;align-items:center;margin:28px 0}.streak-medal{text-align:right;color:#776145}.streak-medal>b{font:700 36px Georgia;color:#a36c2c;padding-left:10px}.streak-medal small{display:block}.board-catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.board-asset{overflow:hidden;border:2px solid #c8b38a;border-radius:18px;background:#f7eedc;box-shadow:0 12px 28px #63503025}.board-preview{height:300px;background-size:100% 100%;position:relative;overflow:hidden}.preview-sunlit{display:grid;place-items:center;background:radial-gradient(ellipse,#eee1b9,#c1cca9 55%,#b89b63);border:14px double #ad8d4e}.preview-sunlit>span{font-size:100px;color:#a88748;border:2px solid #a8874877;border-radius:50%;padding:10px 40px}.preview-inferno,.reward-thumbnail{background-image:url('assets/boards/ultra-graveyard.svg');background-size:100% 100%}.board-asset-info{padding:20px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 12px}.board-asset-info h2{margin:0}.board-asset-info p{grid-column:1;margin:0}.board-asset-info button{grid-column:2;grid-row:1/3}.board-equipped{border-color:#99702e;box-shadow:0 0 0 3px #e3c574,0 12px 28px #63503025}.reward-badge{position:absolute;top:18px;right:18px;color:#ffde9c;background:#421f14dd;border:1px solid #dc8a42;padding:6px 14px;border-radius:30px}.home-streak{display:flex;align-items:center;gap:12px;margin-bottom:16px;width:100%;text-align:left;background:#f0e4cc}.home-streak b{font-size:22px;color:#a56e31}.home-streak span{margin-left:auto}.result-reward{padding:14px 0;border-top:1px solid #cbb78b;margin-bottom:20px}.reward-thumbnail{height:100px;border-radius:8px;margin-bottom:10px}.result-reward>span,.result-reward>strong{display:block}.result-reward>span{font-size:12px;color:#8b6835}.result-reward>strong{font-size:22px}.result-card #resultStreak{margin:0 0 20px;color:#987232}
+.board-inferno .combat-arena{background:#26211f url('assets/boards/ultra-graveyard.svg') center/100% 100%;border-color:#623d2d;box-shadow:inset 0 0 0 2px #d48a4d,inset 0 0 0 6px #37231c,inset 0 0 45px #140f0d,0 0 30px #db532a55}
+.board-inferno .table-ornaments{display:none}.board-inferno .hero-lane{background:linear-gradient(90deg,#3b2925cc,#633e30aa 50%,#332523aa);border-color:#876044}.board-inferno .player-lane{background:linear-gradient(90deg,#322d28cc,#4c4936aa 50%,#332d24aa)}.board-inferno .hero-side-data span{color:#d0b18c}.board-inferno .hero-side-data b{color:#ffdb9d}.board-inferno .lane-assets .equipment-slot,.board-inferno .lane-assets .trap-slot,.board-inferno .event-chip{background:#312725dd;border-color:#8b6347;color:#ebd7b6}.board-inferno .equipment-empty-label{color:#c9ad88}.board-inferno .board-space{background:transparent}.board-inferno .slot{border-color:#85644955}.board-inferno .slot:empty{background:#201b1717}.board-inferno .arena-seal{background:#3a2c2044;border-color:#af7b43;color:#efbc70}.board-inferno .battle-action-panel{color:#e9c79b}.board-inferno .battle-action-panel small{color:#bf956d}.board-inferno .played-card-flash{color:#302820}.board-inferno .combat-arena::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 32px 0 35px -28px #ff813c,inset -32px 0 35px -28px #ff813c;animation:lava-breathe 5s ease-in-out infinite alternate}
+@keyframes lava-breathe{to{box-shadow:inset 45px 0 40px -28px #ffb354,inset -45px 0 40px -28px #ffb354}}
+@media(max-width:760px){.board-catalog{grid-template-columns:1fr}.board-preview{height:240px}.assets-heading{padding:0 8px}.board-asset-info h2{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.board-inferno .combat-arena::after{animation:none}}
+.reduced-fx .board-inferno .combat-arena::after{animation:none}
+.board-inferno .combat-arena:before{background:none;border-color:#b66d3544}.board-inferno .slot:before{background:radial-gradient(ellipse,#50392922,transparent 70%);border-color:#a5794b33}.board-inferno .slot:after{color:#bc8e5840}
+/* Original painted environments: detail lives at the edges, cards stay legible. */
+.preview-inferno,.reward-thumbnail{background-image:url('assets/boards/ultra-graveyard-v2.png')}.board-inferno .combat-arena{background-image:url('assets/boards/ultra-graveyard-v2.png');border:6px solid #35241b;box-shadow:inset 0 0 0 1px #8f6d4a,inset 0 0 22px #0b0807,0 10px 28px #40261877}.board-inferno .combat-arena:before{border:0}.board-inferno .combat-arena:after{opacity:.45}.board-inferno .arena-seal{opacity:.15}.board-inferno .board-space{border-color:#aa836c25;box-shadow:none}.board-inferno .slot:before{border:0;background:none}.board-inferno .slot:after{opacity:.25}
+.preview-heaven{background:#f1eadc url('assets/boards/celestial-sanctuary-v1.png') center/100% 100%}.board-heaven .combat-arena{background:#f5efe7 url('assets/boards/celestial-sanctuary-v1.png') center/100% 100%;border:5px solid #c1a16b;box-shadow:inset 0 0 0 2px #fff5d8,inset 0 0 16px #fff6dd,0 8px 28px #97713b55}.board-heaven .combat-arena:before,.board-heaven .table-ornaments{display:none}.board-heaven .hero-lane{background:linear-gradient(90deg,#fdf6eae0,#f6e4c7ba,#fdf7ecba);border-color:#c8ae7f}.board-heaven .player-lane{background:linear-gradient(90deg,#e6f0e7dd,#f5f1e0b0,#e3eeebaa)}.board-heaven .board-space{border:0;background:transparent;box-shadow:none}.board-heaven .slot:before{background:none;border-color:#baaa8822}.board-heaven .slot:after{color:#bda46c33}.board-heaven .arena-seal{opacity:.08}.board-heaven .lane-assets .equipment-slot,.board-heaven .lane-assets .trap-slot,.board-heaven .event-chip{background:#faf5eabf;border-color:#c6b38f;color:#756347}
+.board-atmosphere{display:none;position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:inherit;pointer-events:none}.board-inferno .board-atmosphere,.board-heaven .board-atmosphere{display:block}.board-atmosphere i{position:absolute;left:5%;bottom:-10px;width:3px;height:3px;border-radius:50%;animation:board-mote 9s linear infinite;opacity:0;--mote-shift:18px}.board-atmosphere i:nth-child(2){left:94%;animation-delay:-2s}.board-atmosphere i:nth-child(3){left:9%;animation-delay:-4s;--mote-shift:-22px}.board-atmosphere i:nth-child(4){left:90%;animation-delay:-6s;--mote-shift:25px}.board-atmosphere i:nth-child(5){left:3%;animation-delay:-7s;animation-duration:12s}.board-atmosphere i:nth-child(6){left:97%;animation-delay:-9s;animation-duration:11s}.board-atmosphere i:nth-child(7){left:11%;animation-delay:-3s;animation-duration:13s}.board-atmosphere i:nth-child(8){left:88%;animation-delay:-8s;animation-duration:14s}.board-inferno .board-atmosphere i{background:#ffd797;box-shadow:0 0 8px 2px #ff8b42}.board-heaven .board-atmosphere i{width:4px;height:4px;background:#fff8cc;box-shadow:0 0 11px 3px #fff7be}.board-heaven .board-atmosphere:before{content:'';position:absolute;inset:0;background:conic-gradient(from 170deg at 50% -20%,transparent 0 6deg,#fff5cc33 7deg 10deg,transparent 12deg 20deg,#fff8e533 21deg 24deg,transparent 26deg);mix-blend-mode:screen;opacity:.35;animation:heaven-rays 14s ease-in-out infinite alternate}.board-heaven .board-atmosphere:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0 40%,#fff8ed55,transparent 25%),radial-gradient(ellipse at 100% 65%,#fff8ed66,transparent 28%);animation:heaven-mist 11s ease-in-out infinite alternate}
+@keyframes board-mote{10%{opacity:.6}80%{opacity:.35}to{transform:translate(var(--mote-shift),-650px);opacity:0}}@keyframes heaven-rays{to{opacity:.65;transform:translateX(12px)}}@keyframes heaven-mist{to{opacity:.5;transform:translateY(-14px)}}
+.board-draw-stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,1fr);margin:28px 0 38px;border:2px solid #baa16d;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#fff9ec,#ebddc1);box-shadow:0 15px 35px #6b563633}.board-draw-art{min-height:350px;position:relative}.board-draw-panel{padding:32px}.board-draw-panel h1{font-size:32px}.board-draw-panel small{color:#8c785a;display:block}.board-draw-panel #boardDrawPity{display:block;font-size:18px;color:#a27632;margin:20px 0}.board-draw-result{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.draw-pill{font-size:12px;padding:5px 10px;background:#e8dcc5;border:1px solid #c9b68c;border-radius:5px}.draw-pill.jackpot{font-size:18px;color:#856120;background:#fff3c9;border-color:#bd984b}.draw-won{animation:result-reveal .4s ease-out}.luxury-asset{border-color:#bfa166}.luxury-asset .reward-badge{background:#fff2d3df;color:#9b752e;border-color:#c5a267}.battle-economy{display:block;color:#85663f;font-size:12px;margin-bottom:12px}#resultCredits{font-weight:700;color:#a4762e}
+@media(max-width:850px){.board-draw-stage{grid-template-columns:1fr}.board-draw-art{min-height:260px}.board-draw-panel{padding:22px}}
+@media(prefers-reduced-motion:reduce){.board-atmosphere i,.board-atmosphere:before,.board-atmosphere:after,.draw-won{animation:none!important}.board-atmosphere i{display:none}}
+.reduced-fx .board-atmosphere{display:none}
+.board-scene{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;border-radius:inherit}.board-night-shade{position:absolute;inset:0;background:linear-gradient(140deg,#0e225ec9,#17224cce 45%,#3c397dc9);opacity:0;z-index:0;pointer-events:none;border-radius:inherit;mix-blend-mode:multiply}.combat-arena>.hero-lane,.combat-arena>.board-space{position:relative;z-index:3}.scene-night .board-atmosphere:before{opacity:.12}.scene-night .board-atmosphere:after{background:radial-gradient(ellipse at 0 40%,#acc9ff44,transparent 25%),radial-gradient(ellipse at 100% 65%,#acc9ff44,transparent 28%)}.daily-relief{display:flex;align-items:center;gap:20px;padding:14px 20px;margin:12px 0;border:1px solid #c1ab7b;border-radius:12px;background:linear-gradient(100deg,#fff4da,#e7dfc6)}.daily-relief>div{display:flex;gap:14px;flex:1}.daily-relief span{color:#987436;font-size:13px}.daily-relief button{min-width:105px}@media(max-width:600px){.daily-relief{gap:10px;padding:12px}.daily-relief>div{display:block}.daily-relief>div span{display:block}}
 
 </style>
 </head>
@@ -58,7 +97,7 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
       <div class="brand-sigil">U</div>
       <div>
         <div class="title">ULTRA CARD RUNTIME</div>
-        <div class="subtitle">光之牌局 · 0.12</div>
+        <div class="subtitle">光之牌局 · 0.16</div>
       </div>
     </div>
     <div class="top-status">
@@ -72,10 +111,19 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
     <button data-page="collection"><span class="nav-mark">▦</span><b>卡牌收藏</b></button>
     <button data-page="decks"><span class="nav-mark">≡</span><b>牌组工坊</b></button>
     <button data-page="battle"><span class="nav-mark">◇</span><b>对战</b></button>
-    <button data-page="packs" class="nav-secondary"><span class="nav-mark">✦</span><b>卡包</b></button>
+    <button data-page="assets"><span class="nav-mark">▱</span><b>棋盘</b></button>
+    <button data-page="packs" class="nav-secondary"><span class="nav-mark">✦</span><b>抽奖</b></button>
   </nav>
 
   <main>
+    <section id="assetsPage" class="page hidden assets-page">
+      <div class="assets-heading"><div><div class="eyebrow">藏品</div><h1>棋盘</h1></div><div class="streak-medal">当前连胜 <b id="assetStreak">0</b><small>最高连胜 <span id="assetBest">0</span></small></div></div>
+      <div class="board-catalog">
+        <article class="board-asset" data-board="sunlit"><div class="board-preview preview-sunlit"><span>✦</span></div><div class="board-asset-info"><h2>光之石庭</h2><p class="board-status"></p><button class="primary">装备</button></div></article>
+        <article class="board-asset" data-board="ultra-graveyard"><div class="board-preview preview-inferno"><span class="reward-badge">十连胜</span></div><div class="board-asset-info"><h2>奥特墓地</h2><p class="board-status"></p><button class="primary">未解锁</button></div></article>
+        <article class="board-asset luxury-asset" data-board="celestial-sanctuary"><div class="board-preview preview-heaven"><span class="reward-badge">臻藏</span></div><div class="board-asset-info"><h2>星穹圣庭</h2><p class="board-status"></p><button class="primary">前往抽奖</button></div></article>
+      </div>
+    </section>
     <section id="welcomePage" class="page welcome hidden">
       <div class="welcome-emblem">UCR</div>
       <div class="eyebrow">光之牌局</div>
@@ -85,6 +133,8 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
     </section>
 
     <section id="homePage" class="page hidden home-stage">
+      <div class="daily-relief"><div><strong>每日救济金</strong><span>1000 光之结晶</span></div><button id="claimReliefBtn" class="primary">领取</button><span id="reliefNotice" aria-live="polite"></span></div>
+      <button data-jump="assets" class="home-streak">连胜 <b id="homeWinStreak">0</b><span>棋盘藏品 →</span></button>
       <div class="home-hero-scene">
         <div class="hero-aura"></div>
         <div id="homeHeroEmblem" class="home-hero-emblem tiga"><span>ULTRA</span></div>
@@ -122,10 +172,11 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
           <span class="mission-copy"><b>卡牌收藏</b><small></small></span><span class="mission-go">→</span>
         </button>
       </div>
-      <div class="dev-strip"><span>0.12 · 测试版</span><p>全部卡牌已解锁</p><button id="resetProfileBtn" class="danger subtle">重置本地档案</button></div>
+      <div class="dev-strip"><span>0.16 · 测试版</span><p>全部卡牌已解锁</p><button id="resetProfileBtn" class="danger subtle">重置本地档案</button></div>
     </section>
 
     <section id="packsPage" class="page hidden pack-page">
+      <div class="board-draw-stage"><div class="board-draw-art preview-heaven"><span class="reward-badge">臻藏棋盘</span></div><div class="board-draw-panel"><div class="eyebrow">天堂之境</div><h1>星穹圣庭</h1><p>基础概率 1.5% · 第 100 抽必得</p><strong id="boardDrawPity"></strong><div class="pack-actions"><button id="drawBoardOne" class="primary">抽取 1 次 · 100</button><button id="drawBoardTen" class="ghost">最多 10 次 · 1000</button></div><small>获得后停止抽取，按实际次数扣除结晶。</small><div id="boardDrawResult" class="board-draw-result" aria-live="polite"></div></div></div>
       <div class="section-banner"><div><div class="eyebrow">卡包</div><h1>开启卡包</h1><p></p></div><div class="banner-glyph">✦</div></div>
       <div class="pack-stage">
         <div class="pack-orb"><div class="pack-core">UCR</div><div class="pack-ring r1"></div><div class="pack-ring r2"></div></div>
@@ -170,7 +221,7 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
         <div class="lobby-fighter player-fighter"><div id="lobbyPlayerSigil" class="lobby-sigil tiga">U</div><span>我方</span><strong id="battleHeroName"></strong></div>
         <div class="versus-core"><small>标准对战</small><b>VS</b><i></i></div>
         <div class="lobby-fighter enemy-fighter"><div id="lobbyEnemySigil" class="lobby-sigil belial">B</div><span>对手</span><strong id="battleEnemyName">贝利亚</strong></div>
-        <div class="lobby-footer"><p id="battleDeckStatus"></p><button id="startBattleBtn" class="primary battle-start">开始对战 <span>→</span></button></div>
+        <div class="lobby-footer"><p id="battleDeckStatus"></p><span class="battle-economy">胜利 +120 · 败北 −40 · 平局 0</span><button id="startBattleBtn" class="primary battle-start">开始对战 <span>→</span></button></div>
       </div>
     </section>
 
@@ -190,7 +241,7 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
             <div class="energy-dock"><span>光能</span><strong id="railEnergyText">0 / 0</strong><div id="energyPips" class="energy-pips"></div></div>
           </aside>
 
-          <main class="combat-arena"><div class="table-ornaments" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <main class="combat-arena"><div id="boardNightShade" class="board-night-shade" aria-hidden="true"></div><canvas id="boardScene" class="board-scene" aria-hidden="true"></canvas><div class="board-atmosphere" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="table-ornaments" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
             <section class="hero-lane enemy-lane">
               <div id="enemyPortrait" class="hero-portrait"></div>
               <div id="enemyHero" class="hero-card enemy"></div>
@@ -239,6 +290,7 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
 
 <div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><div id="modalTitle" class="modal-title"></div><button id="modalX" class="modal-x">×</button></div><div id="modalBody" class="modal-body"></div><div id="modalActions" class="modal-actions"></div></div></div>
 
+<div id="battleResult" class="battle-result hidden" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="result-card"><div class="result-emblem" aria-hidden="true">✦</div><h2 id="resultTitle">对战结束</h2><p id="resultTurns"></p><p id="resultStreak"></p><p id="resultCredits"></p><div id="resultReward" class="result-reward hidden"><div class="reward-thumbnail"></div><span>新棋盘已解锁</span><strong>奥特墓地</strong></div><button id="resultHomeBtn" class="primary">返回主页</button></div></div>
 <div id="cardFocus" class="card-focus hidden" role="dialog" aria-modal="true">
   <div class="focus-backdrop"></div>
   <div class="focus-stage">
@@ -248,7 +300,11 @@ body.battle-mode{overflow:hidden;background:#c7b894}body.battle-mode .topbar{dis
 </div>
 
 <script src="cards.a36985679625.js"></script>
-<script src="game.ac0ed2ab0852.js"></script>
-<script src="app.43522b0763a7.js"></script>
+<script src="bgm.590fe9b7a9c6.js"></script>
+<script src="audio.3ffef9ccdb2f.js"></script>
+<script src="rewards.421f669ae994.js"></script>
+<script src="board-scene.d4e49febee35.js"></script>
+<script src="game.bfe0c6ad9d6e.js"></script>
+<script src="app.5e59dbed5955.js"></script>
 </body>
 </html>

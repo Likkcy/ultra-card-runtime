@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000" preserveAspectRatio="none">
+ <defs>
+  <linearGradient id="lava" x2="0" y2="1"><stop stop-color="#ffdd79"/><stop offset=".35" stop-color="#ff792e"/><stop offset="1" stop-color="#831b11"/></linearGradient>
+  <radialGradient id="ground"><stop stop-color="#574132"/><stop offset=".65" stop-color="#302a27"/><stop offset="1" stop-color="#141517"/></radialGradient>
+  <linearGradient id="stone" x2="1" y2="1"><stop stop-color="#524943"/><stop offset=".45" stop-color="#242322"/><stop offset="1" stop-color="#111315"/></linearGradient>
+  <radialGradient id="ember"><stop stop-color="#ffe39a"/><stop offset=".3" stop-color="#fa7130"/><stop offset="1" stop-color="#ac2b14" stop-opacity="0"/></radialGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+  <pattern id="grain" width="130" height="100" patternUnits="userSpaceOnUse"><path d="M0 20 40 11 85 25 130 8M20 100 40 72 31 45M85 25 72 60 100 87" fill="none" stroke="#b89b77" stroke-opacity=".06" stroke-width="2"/></pattern>
+  <g id="tomb"><path d="M-33 61-29-50-17-74 0-90 17-74 29-50 33 61Z" fill="url(#stone)" stroke="#72604d" stroke-width="3"/><path d="M-19-22 0-40 19-22 9-13 0-3-9-13Z M0-55V30 M-19 10H19" fill="none" stroke="#b39867" stroke-width="3" opacity=".62"/><path d="m-40 64 11-14h59l13 14Z" fill="#191b1c" stroke="#655546"/><path d="m20-66-5 30 7 21-8 36" fill="none" stroke="#0c0f11" stroke-width="3"/></g>
+ </defs>
+ <rect width="1400" height="1000" fill="#141315"/>
+ <path d="M0 0H153L124 92 145 162 94 227 130 314 77 415 105 527 67 653 123 743 100 883 149 1000H0Z M1400 0H1260L1297 125 1258 237 1310 326 1280 480 1340 560 1293 739 1336 860 1267 1000H1400Z" fill="url(#lava)"/>
+ <path d="M65 0 85 110 47 200 78 288 32 399 64 499 28 648 77 780 36 901 73 1000M1349 0 1317 147 1360 252 1327 390 1366 560 1330 743 1370 892" stroke="#ff9e40" stroke-width="35" fill="none" filter="url(#glow)"/>
+ <path d="M161 19 224 0H1171L1241 30 1220 201 1261 345 1225 477 1254 662 1223 832 1250 970 1172 1000H226L154 966 175 805 143 638 179 461 146 279Z" fill="url(#ground)" stroke="#8d4b2e" stroke-width="5"/>
+ <path d="M168 27 230 7H1166L1232 37M159 967 235 989H1161L1238 963" stroke="#d78a48" stroke-opacity=".65" stroke-width="5" fill="none"/>
+ <rect x="155" y="10" width="1090" height="980" fill="url(#grain)"/>
+ <g fill="none" stroke="#ff7b35" stroke-linejoin="bevel">
+  <path d="m151 220 94 34 44-17 89 36-22 43 77 30m-144-109 19-63 60-22m-213 486 72-47 58 15 53-70 44 26 82-18m-179 62 11 88 75 35m879-478-78 33-43-24-92 53 17 50-71 36m124-86-17-73-56-13m218 486-88-25-36 35-94-37 13-52-58-27m139 79-19 81-75 24" stroke-width="5" opacity=".3" filter="url(#glow)"/>
+  <path d="m151 220 94 34 44-17 89 36-22 43 77 30m-144-109 19-63 60-22m-213 486 72-47 58 15 53-70 44 26 82-18m-179 62 11 88 75 35m879-478-78 33-43-24-92 53 17 50-71 36m124-86-17-73-56-13m218 486-88-25-36 35-94-37 13-52-58-27m139 79-19 81-75 24" stroke-width="2" opacity=".45"/>
+ </g>
+ <g opacity=".45" fill="none" stroke="#977c5c"><ellipse cx="700" cy="500" rx="250" ry="182"/><ellipse cx="700" cy="500" rx="238" ry="170" stroke-opacity=".3"/><path d="m700 420 21 56 69 24-69 24-21 56-21-56-69-24 69-24Z" stroke-width="2"/><path d="M510 500H590M810 500H890M700 340V390M700 610V660"/></g>
+ <g><use href="#tomb" transform="translate(198 118) rotate(-8)"/><use href="#tomb" transform="translate(163 499) rotate(-4) scale(.9)"/><use href="#tomb" transform="translate(197 878) rotate(7)"/><use href="#tomb" transform="translate(1200 119) rotate(8)"/><use href="#tomb" transform="translate(1232 500) rotate(4) scale(.9)"/><use href="#tomb" transform="translate(1200 880) rotate(-7)"/></g>
+ <g fill="url(#ember)"><circle cx="91" cy="247" r="44"/><circle cx="63" cy="720" r="58"/><circle cx="1319" cy="321" r="45"/><circle cx="1350" cy="813" r="50"/></g>
+ <g fill="#ffd489" opacity=".75"><circle cx="110" cy="156" r="2"/><circle cx="81" cy="400" r="3"/><circle cx="143" cy="603" r="2"/><circle cx="71" cy="873" r="3"/><circle cx="1309" cy="187" r="3"/><circle cx="1351" cy="535" r="2"/><circle cx="1287" cy="705" r="3"/></g>
+</svg>

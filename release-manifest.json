@@ -1,18 +1,35 @@
 {
+  "runtimeVersion": "0.16",
   "theme": "sunlit-0.12",
-  "cssSha256": "1301d94d7866bac247808d1fc2bf03b021ab4ac03e2dbd0a9a6be4813094b03c",
+  "cssSha256": "1be984fb85b90454c3ca35bab0ecceab885252d9d574a03f9c808c4b06837795",
   "resources": {
     "cards.js": {
       "filename": "cards.a36985679625.js",
       "sha256": "a369856796254470e8481480f4a2cbea20a04150d5042b2501b6688e6c6f6db8"
     },
+    "bgm.js": {
+      "filename": "bgm.590fe9b7a9c6.js",
+      "sha256": "590fe9b7a9c6f8e645d2efc837fb95ae8d55bd0f28462601555f2e0d0d23c143"
+    },
+    "audio.js": {
+      "filename": "audio.3ffef9ccdb2f.js",
+      "sha256": "3ffef9ccdb2f338c29aced7e868a61be7b71954ae24cada42917c288e93adf9e"
+    },
+    "rewards.js": {
+      "filename": "rewards.421f669ae994.js",
+      "sha256": "421f669ae994013d6ae8048d5ae6eda7eb254d9ed3a269edfe998e2f53ea8de2"
+    },
+    "board-scene.js": {
+      "filename": "board-scene.d4e49febee35.js",
+      "sha256": "d4e49febee35f2be7ba8340fb17cd4000579d3c87529425269b56514f04fd5a9"
+    },
     "game.js": {
-      "filename": "game.ac0ed2ab0852.js",
-      "sha256": "ac0ed2ab08527aff4b40b8760f8941130fd52103fdbd5147c52eaa9bf395554d"
+      "filename": "game.bfe0c6ad9d6e.js",
+      "sha256": "bfe0c6ad9d6e0c3c617aac8a86c900c9c9e137455cc05747b29de5371eb6d9bf"
     },
     "app.js": {
-      "filename": "app.43522b0763a7.js",
-      "sha256": "43522b0763a769ed724ddbd348196a530f8c21b44b2b41f03be3bd2c440e7260"
+      "filename": "app.5e59dbed5955.js",
+      "sha256": "5e59dbed5955b9b4782404d04074b923a9edb1a95f33f0b1e5bdff0f4bf7cb18"
     }
   }
 }
