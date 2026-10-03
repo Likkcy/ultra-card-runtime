@@ -1,6 +1,6 @@
 # Ultra Card Runtime
 
-UCR 0.16 · 光之牌局。原生 HTML/CSS/JavaScript，无构建依赖。
+UCR 0.19 · 光之牌局。原生 HTML/CSS/JavaScript，无构建依赖。
 
 GitHub Pages：Settings → Pages → Deploy from a branch → main → /(root)。
 将此目录的文件直接放在仓库根目录，index.html 与其他文件同级。
